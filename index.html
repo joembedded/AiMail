@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<!-- http://localhost/wrk/aimail/index.html -->
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jo's AiMail</title>
+    <style>
+        * {
+            margin: 5px;
+            padding: 5px;
+        }
+
+        #output-container,
+        #output-container div,
+        .corrected-mail {
+            white-space: pre-wrap;
+        }
+
+#output-container {
+            border: 1px solid #00F;
+            overflow-y: auto;
+        }
+
+        #input-container {
+            display: flex;
+            gap: 5px;
+            align-items: flex-start;
+        }
+
+        #message-input {
+            white-space: pre-wrap;
+            flex: 1;
+            min-height: 100px;
+            resize: none;
+            font-family: inherit;
+            overflow: hidden;
+        }
+
+        #send-button {
+            padding: 5px 10px;
+            white-space: nowrap;
+        }
+
+        #header {
+            font-size: 1.5em;
+            font-weight: bold;
+            background-color: silver
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header">
+        Jo's AiMail - MailFormatierer V0.01
+        <small>Ein kleines Tool zur Korrektur von E-Mails mit OpenAI. </small>
+
+    </div>
+    <div id="output-container">(Korrektur erscheint hier)</div>
+    <div id="input-container">
+        <textarea id="message-input" placeholder="Hier Mail einfuegen..."></textarea>
+        <button id="send-button">Korrigieren</button>
+    </div>
+
+    <script>
+        const outputContainer = document.getElementById('output-container');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+
+        function autoResize() {
+            messageInput.style.height = 'auto';
+            messageInput.style.height = messageInput.scrollHeight + 'px';
+        }
+
+        messageInput.addEventListener('input', autoResize);
+        autoResize();
+
+        async function sendMessage() {
+            const text = messageInput.value.trim();
+            if (text) {
+                //console.log("Input Mail:", text);
+                // messageInput.value = ''; Stehen lassen
+
+                // Hier OpenAI API-Aufruf implementieren
+                outputContainer.textContent = "Bitte warten (max. 30sec), Ai korrigiert...";
+
+                const res = await fetch("./api/aicall.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ text })
+                });
+
+                const data = await res.json();
+                //console.log("Ergebnis:", data);
+
+                let result = "";
+                if (data.answer) {
+                    let correctedMail = '======== Korrigierte Mail ========\n';
+                    let changes = '\n=============================\n--- Änderungen ---\n';
+                    let issues = '\n--- Gefundene Probleme ---\n';
+                    try {
+                        const answerObj = JSON.parse(data.answer);
+                        if (answerObj.corrected_email) correctedMail += answerObj.corrected_email + '\n';
+                        if (answerObj.changes) changes += answerObj.changes.map(c => ' - ' + c).join('\n') + '\n';
+                        if (answerObj.issues) issues += answerObj.issues.map(i => ' - ' + i).join('\n') + '\n';
+                    } catch (e) {
+                        correctedMail += data.answer + '\n'; // Fallback: Ganze Antwort
+                    }
+                    result = correctedMail + changes + issues;
+                }
+                if (data.error) result += "--- ERROR: " + data.error;
+
+
+                if (result.length === 0) result = "ERROR: " + JSON.stringify(data);
+                outputContainer.textContent =  result;
+            }
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+
+    </script>
+</body>
+
+</html>
