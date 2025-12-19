@@ -18,7 +18,7 @@
             white-space: pre-wrap;
         }
 
-#output-container {
+        #output-container {
             border: 1px solid #00F;
             overflow-y: auto;
         }
@@ -34,7 +34,6 @@
             flex: 1;
             min-height: 100px;
             resize: none;
-            font-family: inherit;
             overflow: hidden;
         }
 
@@ -44,18 +43,20 @@
         }
 
         #header {
-            font-size: 1.5em;
-            font-weight: bold;
-            background-color: silver
+            background-color: silver;
+        }
+
+        #header a {
+            text-decoration: none;
         }
     </style>
 </head>
 
 <body>
-    <div id="header">
-        Jo's AiMail - MailFormatierer V0.01
-        <small>Ein kleines Tool zur Korrektur von E-Mails mit OpenAI. </small>
-
+    <div id="header"><b>JoEmbedded's AiMail - MailFormatierer V0.01</b>
+<a style="float:right" href="https://github.com/joembedded/AiMail" target="_blank">[Repo onGitHub]</a>
+        <br>
+            <small>Ein kleines Tool zur Korrektur von E-Mails mit OpenAI</small>
     </div>
     <div id="output-container">(Korrektur erscheint hier)</div>
     <div id="input-container">
@@ -102,10 +103,20 @@
                     try {
                         const answerObj = JSON.parse(data.answer);
                         if (answerObj.corrected_email) correctedMail += answerObj.corrected_email + '\n';
-                        if (answerObj.changes) changes += answerObj.changes.map(c => ' - ' + c).join('\n') + '\n';
-                        if (answerObj.issues) issues += answerObj.issues.map(i => ' - ' + i).join('\n') + '\n';
+                        if (answerObj.changes && answerObj.changes.length > 0) {
+                            changes += answerObj.changes.map(c => ' - ' + c).join('\n') + '\n';
+                        } else {
+                            changes = '';
+                        }
+                        if (answerObj.issues && answerObj.issues.length > 0) {
+                            issues += answerObj.issues.map(i => ' - ' + i).join('\n') + '\n';
+                        } else {
+                            issues = '';
+                        }
                     } catch (e) {
                         correctedMail += data.answer + '\n'; // Fallback: Ganze Antwort
+                        changes = '';
+                        issues = '';
                     }
                     result = correctedMail + changes + issues;
                 }
@@ -113,7 +124,7 @@
 
 
                 if (result.length === 0) result = "ERROR: " + JSON.stringify(data);
-                outputContainer.textContent =  result;
+                outputContainer.textContent = result;
             }
         }
 

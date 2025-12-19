@@ -1,4 +1,4 @@
-# Jo's AiMail
+# JoEmbedded's AiMail
 
 Ein einfaches Werkzeug zur Formatierung und Korrektur geschäftlicher E-Mails in minimalistischer Form.
 
@@ -28,4 +28,4 @@ Die API-Schlüssel werden in `secret/keys.inc.php` gespeichert. Eine Vorlage fin
 
 ## Lizenz
 
-MIT License - siehe [LICENSE](LICENSE) für Details.
+MIT License 

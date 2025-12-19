@@ -1,9 +1,9 @@
 <?php
 
 // Zum Testen $dbg  de/aktivieren und 
-// Aufruf: http://localhost/wrk/aimail/api/aicall.php?dbg=2
+// Aufruf: http://localhost/wrk/aimail/api/aicall.php?dbg=5
 declare(strict_types=1);
-$dbg = $_GET['dbg'] ?? 0; // Bitweise 0: Aus 1:Input 2:Output=Input 4:Output aus File od. manuell
+$dbg = $_GET['dbg'] ?? 0; // Bitweise 0: Aus 1:Input 2:Output=Input 4:Output aus File od. manuell (5 empfohlen zum Testen)
 session_start();
 
 header('Content-Type: application/json; charset=utf-8');
@@ -23,7 +23,7 @@ $payload = json_decode($raw, true);
 $userText = trim($payload['text'] ?? '');
 
 // Testweise Input simulieren $dbg & 1
-if($dbg & 1) $userText = "Sehr Damen u Herren, wie geplant, nix passiert. Uffbasse! Jo";
+if ($dbg & 1) $userText = "Sehr Damen u Herren, wie geplant, nix passiert. Uffbasse! Jo";
 
 if ($userText === '') {
   http_response_code(400);
@@ -32,8 +32,8 @@ if ($userText === '') {
 }
 
 // Testweise direkte Ausgabe des Inputs $dbg & 2
-if($dbg & 2) {
-  echo json_encode(["answer" => "Input war '$userText'"], JSON_UNESCAPED_UNICODE); 
+if ($dbg & 2) {
+  echo json_encode(["answer" => "Input war '$userText'"], JSON_UNESCAPED_UNICODE);
   exit;
 }
 
@@ -81,28 +81,28 @@ Regeln:
 ];
 
 // Testweise Antwort 
-if($dbg & 4 ){
+if ($dbg & 4) {
   $response = file_get_contents(__DIR__ . '/../docus/testresponse.json');
   $httpCode = 200;
   $curlErr = '';
-}else{
+} else {
 
-$ch = curl_init("https://api.openai.com/v1/responses");
-curl_setopt_array($ch, [
-  CURLOPT_RETURNTRANSFER => true,
-  CURLOPT_POST => true,
-  CURLOPT_HTTPHEADER => [
-    "Content-Type: application/json",
-    "Authorization: Bearer " . $apiKey,
-  ],
-  CURLOPT_POSTFIELDS => json_encode($data, JSON_UNESCAPED_UNICODE),
-  CURLOPT_TIMEOUT => 30,
-]);
+  $ch = curl_init("https://api.openai.com/v1/responses");
+  curl_setopt_array($ch, [
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_POST => true,
+    CURLOPT_HTTPHEADER => [
+      "Content-Type: application/json",
+      "Authorization: Bearer " . $apiKey,
+    ],
+    CURLOPT_POSTFIELDS => json_encode($data, JSON_UNESCAPED_UNICODE),
+    CURLOPT_TIMEOUT => 30,
+  ]);
 
-$response = curl_exec($ch);
-$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$curlErr = curl_error($ch);
-// curl_close($ch);
+  $response = curl_exec($ch);
+  $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+  $curlErr = curl_error($ch);
+  // curl_close($ch);
 } // Ende von $dbg & 4
 
 if ($response === false) {

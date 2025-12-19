@@ -1,1 +1,3 @@
 --Jo Notes zum Projekt--
+
+docus/testresponse.json ist eine Test-Antwort des Servers mit codierten Feldern
