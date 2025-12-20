@@ -53,7 +53,7 @@
 </head>
 
 <body>
-    <div id="header"><b>JoEmbedded's AiMail - MailFormatierer V0.01</b>
+    <div id="header"><b>JoEmbedded's AiMail - MailFormatierer V0.012</b>
 <a style="float:right" href="https://github.com/joembedded/AiMail" target="_blank">[Repo onGitHub]</a>
         <br>
             <small>Ein kleines Tool zur Korrektur von E-Mails mit OpenAI</small>
@@ -121,7 +121,6 @@
                     result = correctedMail + changes + issues;
                 }
                 if (data.error) result += "--- ERROR: " + data.error;
-
 
                 if (result.length === 0) result = "ERROR: " + JSON.stringify(data);
                 outputContainer.textContent = result;
